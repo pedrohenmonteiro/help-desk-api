@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import main.java.models.enums.ProfileEnum;
+import models.enums.ProfileEnum;
 
 @With
 @Data
@@ -23,5 +23,5 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private Set<ProfileEnum> profile;
+    private Set<ProfileEnum> profiles;
 }
