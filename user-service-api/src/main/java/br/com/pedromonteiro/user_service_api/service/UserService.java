@@ -6,6 +6,7 @@ import br.com.pedromonteiro.user_service_api.mapper.UserMapper;
 import br.com.pedromonteiro.user_service_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import models.exceptions.ResourceNotFoundException;
+import models.requests.CreateUserRequest;
 import models.responses.UserResponse;
 
 
@@ -20,5 +21,10 @@ public class UserService {
     public UserResponse findById(final String id) {
         return userMapper.fromEntity(userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Object not found. Id: " + id + ", Type: " + UserResponse.class.getSimpleName())));
 
+    }
+
+    public void save(CreateUserRequest createUserRequest) {
+        var user = userMapper.fromRequest(createUserRequest);
+        userRepository.save(user);
     }
 }

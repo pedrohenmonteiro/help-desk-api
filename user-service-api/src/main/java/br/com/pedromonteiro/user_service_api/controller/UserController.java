@@ -1,8 +1,12 @@
 package br.com.pedromonteiro.user_service_api.controller;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import models.responses.UserResponse;
 import models.exceptions.StandardError;
+import models.requests.CreateUserRequest;
 
 
 
@@ -25,18 +30,12 @@ public interface UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(
-            responseCode = "404", 
-            description = "User not found", 
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = StandardError.class)
+            responseCode = "404", description = "User not found", 
+            content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = StandardError.class)
         )),
         @ApiResponse(
-            responseCode = "500", 
-            description = "Internal Server Error", 
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = StandardError.class)
+            responseCode = "500", description = "Internal Server Error", 
+            content = @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = StandardError.class)
         )),
 
     })
@@ -45,4 +44,20 @@ public interface UserController {
         @Parameter(description = "User ID", required = true, example = "64af1d9a2d9a2d9a2d9a2d9a")
         @PathVariable final String id
         );
+
+
+    @Operation(summary = "Save New User")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User created"),
+        @ApiResponse( 
+        responseCode = "400", description = "Bad Request", 
+        content = @Content(mediaType = APPLICATION_JSON_VALUE,schema = @Schema(implementation = StandardError.class)
+        )),
+        @ApiResponse( 
+        responseCode = "500", description = "Internal Server Error", 
+        content = @Content(mediaType = APPLICATION_JSON_VALUE,schema = @Schema(implementation = StandardError.class)
+        )),
+    })
+    @PostMapping
+    ResponseEntity<Void> save(@RequestBody final CreateUserRequest createUserRequest);
 }
