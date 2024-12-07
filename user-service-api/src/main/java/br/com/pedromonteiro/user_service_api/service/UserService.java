@@ -1,5 +1,7 @@
 package br.com.pedromonteiro.user_service_api.service;
 
+import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +38,12 @@ public class UserService {
             .ifPresent(user -> {
                 throw new DataIntegrityViolationException("Email " + "'" + email + "' already exists");
             });
+    }
+
+    public List<UserResponse> findAll() {
+        return userRepository.findAll()
+            .stream()
+            .map(userMapper::fromEntity)
+            .toList();
     }
 }

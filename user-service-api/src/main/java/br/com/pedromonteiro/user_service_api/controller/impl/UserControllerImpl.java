@@ -2,6 +2,8 @@ package br.com.pedromonteiro.user_service_api.controller.impl;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,11 @@ public class UserControllerImpl implements UserController{
     public ResponseEntity<Void> save(final CreateUserRequest createUserRequest) {
         userService.save(createUserRequest);
         return ResponseEntity.status(CREATED).build();
+    }
+
+    @Override
+    public ResponseEntity<List<UserResponse>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
     }
     
 }
