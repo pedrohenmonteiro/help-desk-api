@@ -1,5 +1,6 @@
 package br.com.pedromonteiro.user_service_api.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.pedromonteiro.user_service_api.mapper.UserMapper;
@@ -24,7 +25,16 @@ public class UserService {
     }
 
     public void save(CreateUserRequest createUserRequest) {
+        validateEmail(createUserRequest.email(), null);
         var user = userMapper.fromRequest(createUserRequest);
         userRepository.save(user);
+    }
+
+    private void validateEmail(final String email, final String id) {
+       userRepository.findByEmail(email)
+            .filter(user -> !user.getId().equals(id))
+            .ifPresent(user -> {
+                throw new DataIntegrityViolationException("Email " + "'" + email + "' already exists");
+            });
     }
 }

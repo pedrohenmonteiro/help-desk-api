@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,7 +38,7 @@ public class ControllerExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<ValidationException> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex, final HttpServletRequest request) {
+    ResponseEntity<StandardError> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex, final HttpServletRequest request) {
 
         var err = ValidationException.builder()
         .timestamp(LocalDateTime.now())
@@ -52,5 +53,18 @@ public class ControllerExceptionHandler {
             err.addError(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return ResponseEntity.status(NOT_FOUND).body(err);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ResponseEntity<StandardError> handleDataIntegrityViolationException(final DataIntegrityViolationException ex, final HttpServletRequest request) {
+
+        var err = StandardError.builder()
+        .timestamp(LocalDateTime.now())
+        .status(BAD_REQUEST.value())
+        .error(BAD_REQUEST.getReasonPhrase())
+        .message(ex.getMessage())
+        .path(request.getRequestURI())
+        .build();
+        return ResponseEntity.badRequest().body(err);
     }
 }
