@@ -3,6 +3,7 @@ package br.com.pedromonteiro.user_service_api.service;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.pedromonteiro.user_service_api.entity.User;
@@ -23,14 +24,17 @@ public class UserService {
 
     private final UserMapper userMapper;
 
+    private final BCryptPasswordEncoder encoder;
+
     public UserResponse findById(final String id) {
         return userMapper.fromEntity(findUser(id));
 
     }
 
-    public void save(CreateUserRequest createUserRequest) {
-        validateIfEmailAlreadyExists(createUserRequest.email(), null);
-        var user = userMapper.fromRequest(createUserRequest);
+    public void save(CreateUserRequest request) {
+        validateIfEmailAlreadyExists(request.email(), null);
+        var user = userMapper.fromRequest(request)
+                            .withPassword(encoder.encode(request.password()));
         userRepository.save(user);
     }
 
@@ -39,7 +43,7 @@ public class UserService {
        userRepository.findByEmail(email)
             .filter(user -> !user.getId().equals(id))
             .ifPresent(user -> {
-                throw new DataIntegrityViolationException("Email " + "'" + email + "' already exists");
+                throw new DataIntegrityViolationException("Email " + "'" + user.getEmail() + "' already exists");
             });
     }
 
@@ -57,11 +61,12 @@ public class UserService {
             .toList();
     }
 
-    public UserResponse update(final String id, final UpdateUserRequest updateUserRequest) {
+    public UserResponse update(final String id, final UpdateUserRequest request) {
         var entity = findUser(id);
-        validateIfEmailAlreadyExists(updateUserRequest.email(), id);
+        validateIfEmailAlreadyExists(request.email(), id);
         final var newEntity = userRepository.save(
-            userMapper.update(updateUserRequest, entity)
+            userMapper.update(request, entity)
+                .withPassword(request.password() != null ? encoder.encode(request.password()) : entity.getPassword())
         );
         return userMapper.fromEntity(newEntity);
     }
