@@ -11,6 +11,7 @@ import br.com.pedromonteiro.user_service_api.controller.UserController;
 import br.com.pedromonteiro.user_service_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import models.requests.CreateUserRequest;
+import models.requests.UpdateUserRequest;
 import models.responses.UserResponse;
 
 
@@ -37,4 +38,10 @@ public class UserControllerImpl implements UserController{
         return ResponseEntity.ok(userService.findAll());
     }
     
+
+    @Override
+    public ResponseEntity<UserResponse> update(final String id, final UpdateUserRequest updateUserRequest) {
+        return ResponseEntity.ok(userService.update(id, updateUserRequest));
+    }
+
 }

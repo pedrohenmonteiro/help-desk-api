@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import br.com.pedromonteiro.user_service_api.entity.User;
 import br.com.pedromonteiro.user_service_api.mapper.UserMapper;
 import br.com.pedromonteiro.user_service_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import models.exceptions.ResourceNotFoundException;
 import models.requests.CreateUserRequest;
+import models.requests.UpdateUserRequest;
 import models.responses.UserResponse;
 
 
@@ -22,22 +24,30 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserResponse findById(final String id) {
-        return userMapper.fromEntity(userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Object not found. Id: " + id + ", Type: " + UserResponse.class.getSimpleName())));
+        return userMapper.fromEntity(findUser(id));
 
     }
 
     public void save(CreateUserRequest createUserRequest) {
-        validateEmail(createUserRequest.email(), null);
+        validateIfEmailAlreadyExists(createUserRequest.email(), null);
         var user = userMapper.fromRequest(createUserRequest);
         userRepository.save(user);
     }
 
-    private void validateEmail(final String email, final String id) {
+    private void validateIfEmailAlreadyExists(final String email, final String id) {
+        // Se findByEmail vier empty, ignora filter e ifPresent
        userRepository.findByEmail(email)
             .filter(user -> !user.getId().equals(id))
             .ifPresent(user -> {
                 throw new DataIntegrityViolationException("Email " + "'" + email + "' already exists");
             });
+    }
+
+    public User findUser(final String id) {
+        return userRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Object not found. Id: " + id + ", Type: " + UserResponse.class.getSimpleName()
+                    ));
     }
 
     public List<UserResponse> findAll() {
@@ -46,4 +56,14 @@ public class UserService {
             .map(userMapper::fromEntity)
             .toList();
     }
+
+    public UserResponse update(final String id, final UpdateUserRequest updateUserRequest) {
+        var entity = findUser(id);
+        validateIfEmailAlreadyExists(updateUserRequest.email(), id);
+        final var newEntity = userRepository.save(
+            userMapper.update(updateUserRequest, entity)
+        );
+        return userMapper.fromEntity(newEntity);
+    }
 }
+ 
