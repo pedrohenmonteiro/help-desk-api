@@ -1,0 +1,21 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'br.com.pedromonteiro'
+version = '1.0.0'
+
+apply from: 'gradle/plugins/dependencies.gradle'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
