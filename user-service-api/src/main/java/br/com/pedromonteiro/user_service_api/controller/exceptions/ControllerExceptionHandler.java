@@ -53,7 +53,7 @@ public class ControllerExceptionHandler {
         for(FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             err.addError(fieldError.getField(), fieldError.getDefaultMessage());
         }
-        return ResponseEntity.status(NOT_FOUND).body(err);
+        return ResponseEntity.status(BAD_REQUEST).body(err);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

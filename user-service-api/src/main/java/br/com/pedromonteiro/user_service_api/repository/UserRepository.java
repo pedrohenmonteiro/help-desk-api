@@ -11,5 +11,7 @@ import br.com.pedromonteiro.user_service_api.entity.User;
 public interface UserRepository extends MongoRepository<User, String>{
 
     Optional<User> findByEmail(String email);
+
+    void deleteByEmail(final String email);
     
 }
