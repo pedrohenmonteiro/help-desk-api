@@ -45,6 +45,11 @@ public class Order implements Serializable {
     @Column(nullable = false, length = 3000)
     private String description;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatusEnum status = OPEN;
+
+
     private LocalDateTime createdAt;
     private LocalDateTime closedAt;
 }
