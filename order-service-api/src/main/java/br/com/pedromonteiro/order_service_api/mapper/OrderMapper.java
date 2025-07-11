@@ -29,6 +29,11 @@ public interface OrderMapper {
     @Mapping(target = "createdAt", expression = "java(mapCreatedAt())")
     Order fromRequest(CreateOrderRequest request);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "status", source = "request.status", qualifiedByName = "mapStatus")
+    Order fromRequest(@MappingTarget Order entity, UpdateOrderRequest request);
+
     OrderResponse fromEntity(Order save);
 
     @Named("mapStatus")
