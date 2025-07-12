@@ -3,6 +3,9 @@ package br.com.pedromonteiro.order_service_api.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import br.com.pedromonteiro.order_service_api.entity.Order;
@@ -55,6 +58,18 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<Order> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Page<Order> findAllPaginated(Integer page, Integer linesPerPage, String direction, String orderBy) {
+        PageRequest pageRequest = PageRequest.of(
+            page,
+            linesPerPage,
+            Direction.valueOf(direction),
+            orderBy
+        );
+
+        return repository.findAll(pageRequest);
     }
 
     

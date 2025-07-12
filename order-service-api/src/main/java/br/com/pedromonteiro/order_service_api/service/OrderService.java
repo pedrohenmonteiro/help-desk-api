@@ -2,6 +2,8 @@ package br.com.pedromonteiro.order_service_api.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import br.com.pedromonteiro.order_service_api.entity.Order;
 import models.requests.CreateOrderRequest;
 import models.requests.UpdateOrderRequest;
@@ -18,4 +20,6 @@ public interface OrderService {
     void deleteById(Long id);
 
     List<Order> findAll();
+
+    Page<Order> findAllPaginated(Integer page, Integer linesPerPage, String direction, String orderBy);
 }

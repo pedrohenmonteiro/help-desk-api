@@ -58,6 +58,14 @@ public class OrderControllerImpl implements OrderController{
         return ResponseEntity.noContent().build();
     }
 
-
+    @Override
+    public ResponseEntity<Page<OrderResponse>> findAllPaginated(Integer page, Integer linesPerPage, String direction,
+            String orderBy) {
+        return ResponseEntity.ok(
+            service.findAllPaginated(page, linesPerPage, direction, orderBy).map(
+                mapper::fromEntity
+            )
+        );
+    }
     
 }
