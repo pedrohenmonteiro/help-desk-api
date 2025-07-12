@@ -1,6 +1,7 @@
 package br.com.pedromonteiro.order_service_api.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,19 @@ public class OrderServiceImpl implements OrderService{
 
         return mapper.fromEntity(repository.save(entity));
     }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.delete(findById(id));
+    }
+
+    @Override
+    public List<Order> findAll() {
+        return repository.findAll();
+    }
+
+    
+    
     
 
 }
