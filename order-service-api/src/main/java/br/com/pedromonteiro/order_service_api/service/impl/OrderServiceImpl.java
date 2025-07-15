@@ -8,23 +8,28 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import br.com.pedromonteiro.order_service_api.clients.UserServiceFeignClient;
 import br.com.pedromonteiro.order_service_api.entity.Order;
 import br.com.pedromonteiro.order_service_api.mapper.OrderMapper;
 import br.com.pedromonteiro.order_service_api.repository.OrderRepository;
 import br.com.pedromonteiro.order_service_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import models.enums.OrderStatusEnum;
 import models.exceptions.ResourceNotFoundException;
 import models.requests.CreateOrderRequest;
 import models.requests.UpdateOrderRequest;
 import models.responses.OrderResponse;
+import models.responses.UserResponse;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository repository;
     private final OrderMapper mapper;
+    private final UserServiceFeignClient userServiceFeignClient;
     
     @Override
     public Order findById(Long id) {
@@ -33,8 +38,14 @@ public class OrderServiceImpl implements OrderService{
     }
     
     @Override
-    public void save(CreateOrderRequest createOrderRequest) {
-        repository.save(mapper.fromRequest(createOrderRequest));
+    public void save(CreateOrderRequest request) {
+        final var requester = validateUserId(request.requesterId());
+        final var customer = validateUserId(request.customerId());
+
+        log.info("Requester: {}", requester);
+        log.info("Customer: {}", customer);
+
+        repository.save(mapper.fromRequest(request));
     }
 
     @Override
@@ -73,7 +84,9 @@ public class OrderServiceImpl implements OrderService{
     }
 
     
-    
+    UserResponse validateUserId(final String userId) {
+        return userServiceFeignClient.findById(userId).getBody();
+    }
     
 
 }
