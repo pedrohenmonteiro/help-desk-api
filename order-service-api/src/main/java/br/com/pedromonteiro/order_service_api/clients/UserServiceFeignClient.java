@@ -9,7 +9,7 @@ import models.responses.UserResponse;
 
 @FeignClient(
     name = "user-service-api",
-    url = "http://localhost:8080/api/users"
+    url = "/api/users"
 
 )
 public interface UserServiceFeignClient {
