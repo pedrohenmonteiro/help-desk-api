@@ -3,6 +3,7 @@ package br.com.pedromonteiro.order_service_api.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -15,6 +16,7 @@ import br.com.pedromonteiro.order_service_api.repository.OrderRepository;
 import br.com.pedromonteiro.order_service_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import models.dtos.OrderCreatedMessage;
 import models.enums.OrderStatusEnum;
 import models.exceptions.ResourceNotFoundException;
 import models.requests.CreateOrderRequest;
@@ -30,7 +32,9 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository repository;
     private final OrderMapper mapper;
     private final UserServiceFeignClient userServiceFeignClient;
-    
+    private final RabbitTemplate rabbitTemplate;
+
+
     @Override
     public Order findById(Long id) {
         return repository.findById(id)
@@ -41,11 +45,18 @@ public class OrderServiceImpl implements OrderService{
     public void save(CreateOrderRequest request) {
         final var requester = validateUserId(request.requesterId());
         final var customer = validateUserId(request.customerId());
+        final var entity = repository.save(mapper.fromRequest(request));
 
         log.info("Requester: {}", requester);
         log.info("Customer: {}", customer);
 
-        repository.save(mapper.fromRequest(request));
+        
+
+        rabbitTemplate.convertAndSend(
+            "helpdesk",
+            "rk.orders.create",
+            new OrderCreatedMessage(mapper.fromEntity(entity), customer, requester)
+        );
     }
 
     @Override
