@@ -1,0 +1,51 @@
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates' }
+}
+
+ext {
+    set('springCloudVersion', "2025.0.0")
+}
+
+dependencies {
+    // Biblioteca de código comum
+    implementation "br.com.pedromonteiro:hd-commons-lib:1.0.0"
+
+    // Starter para envio de e-mails com Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Starter para desenvolvimento de aplicativos web com Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Starter para RabbitMQ com Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // Thymeleaf - Template Engine
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Starter para configuração do Spring Cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+
+    // Lombok - Redução de código boilerplate
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Starter para configuração do Spring Cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+    // Starter para cliente Eureka do Spring Cloud Netflix
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // Actuator - Monitoramento e gerenciamento de aplicações Spring Boot
+    implementation 'org.springframework.boot:spring-boot-actuator'
+
+    // Starter para testes do Spring Boot
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
